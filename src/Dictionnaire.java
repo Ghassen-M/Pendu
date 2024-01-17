@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.tree.TreeNode;
-
 public class Dictionnaire{
 
     public List<String> fileToList(String nomDictionnaire) {
@@ -54,23 +52,7 @@ public class Dictionnaire{
         }
         return false;
     }
-    /* 
-    public void printTree(Arbre a, String prefix) {
-        if (a == null) {
-            return;
-        }
 
-        System.out.println(prefix + "├── " + a.getValeur());
-
-        for (int i = 0; i < a.getFils().size() - 1; i++) {
-            printTree(a.getFils().get(i), prefix + "│   ");
-        }
-
-        if (a.getFils().size() > 0) {
-            printTree(a.getFils().get(a.getFils().size() - 1), prefix + "    ");
-        }
-    }
-    */
     public void printTree(Arbre a, String prefix, boolean isTail) {
         System.out.println(prefix + (isTail ? "└── " : "├── ") + a.getValeur());
 
