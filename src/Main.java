@@ -32,13 +32,11 @@ public class Main {
                 }catch (InputMismatchException e) {System.out.println("Il faut saisir un nombre!");scanner.next();} 
 
                 }while((choix!=1) && (choix!=2) &&(choix!=3)); 
-            /* Test lecture mots du dictionnaire */
+            /* Test lecture mots du dictionnaire et représentation*/
+            
             Dictionnaire d=new Dictionnaire();
-            List <String> l=d.readFileToList("dictionnaire");
-            for (String line : l) {
-                System.out.println(line);
-            }
-            System.out.println(l.size());
+            Arbre a=d.arbreNAire("dictionnaireExempleEnonce");
+            d.printTree(a, "",true);;
             
             break;
     }
