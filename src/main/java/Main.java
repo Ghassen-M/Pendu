@@ -34,8 +34,8 @@ public class Main {
             /* Test lecture mots du dictionnaire et représentation*/
             
             Dictionnaire d=new Dictionnaire();
-            Arbre a=d.arbreNAire("dictionnaireExempleEnonce");
-            d.printTree(a, "",true);;
+            ABR a=d.arbreBinaire("dictionnaireExempleEnonce");
+            d.printTreeBinaire(a, null, false);
             
             break;
     }

@@ -10,21 +10,20 @@ class ABR {
         this.valeur = valeur;
     }
 
-    
-    public ABR getFilsDroit() {
+    public void ajoutFD(ABR noeud) {
+        this.filsDroit=noeud;
+    }
+    public void ajoutFG(ABR noeud) {
+        this.filsGauche=noeud;
+    }
+
+
+    public ABR getFD() {
         return filsDroit;
     }
 
-    public void setFilsDroit(ABR filsDroit) {
-        this.filsDroit = filsDroit;
-    }
-
-    public ABR getFilsGauche() {
+    public ABR getFG() {
         return filsGauche;
-    }
-
-    public void setFilsGauche(ABR filsGauche) {
-        this.filsGauche = filsGauche;
     }
 
     public char getValeur() {
