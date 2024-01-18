@@ -1,12 +1,23 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class Dictionnaire{
+    
+    public boolean existenceFichier(String nomDictionnaire){
+        Path filePath = FileSystems.getDefault().getPath("assets/"+nomDictionnaire+".txt");
+        return Files.exists(filePath);
+    }
 
     public List<String> fileToList(String nomDictionnaire) {
         String path = "assets/"+nomDictionnaire+".txt";
@@ -58,28 +69,24 @@ public class Dictionnaire{
     public void afficherArbre(Arbre a, String prefixe, boolean feuille) {
         System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur());
 
-        for (int i = 0; i < a.getFils().size(); i++) {
+        for (int i = 0; i < a.getFils().size(); i++)
             afficherArbre(a.getFils().get(i), prefixe + (feuille ? "    " : "│   "), i == a.getFils().size() - 1);
-        }
     }
     public void afficherArbreBinaire(ABR a, String prefixe, boolean feuille) {
         String childIndicator = (a.getFG() != null) ? "FG" : ((a.getFD() != null) ? "FD" : "");
         System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur() + " (" + childIndicator + ")");
     
-        if (a.getFG() != null) {
+        if (a.getFG() != null)
             afficherArbreBinaire(a.getFG(), prefixe + (feuille ? "    " : "│   "), a.getFD() == null);
-        }
     
-        if (a.getFD() != null) {
+        if (a.getFD() != null)
             afficherArbreBinaire(a.getFD(), prefixe + (feuille ? "    " : "│   "), a.getFD().getFD() == null);
-        }
     }
 
-    public ABR arbreBinaire(String nomDictionnaire){
-        Arbre aN=arbreNAire(nomDictionnaire);
-        ABR a=new ABR(aN.getValeur());
+    public ABR arbreBinaire(Arbre arbreNaire){
+        ABR a=new ABR(arbreNaire.getValeur());
         Queue<Arbre> file = new LinkedList<>();
-        file.offer(aN);
+        file.offer(arbreNaire);
         parcoursFG(a, file);
         a=a.getFG();
         return a;
@@ -90,18 +97,18 @@ public class Dictionnaire{
 
             parcoursFD(a, file);
 
-            for (Arbre fils : parent.getFils()){
-                if (fils!=null){
+            for (Arbre fils : parent.getFils())
+                if (fils!=null)
                     file.offer(fils);
-                }
-            }
+                
+            
 
-            for (Arbre fils : parent.getFils()){  //Pour tester qu'il ne s'sagit pas d'une feuille (et donc ne pas lui ajouter un FG car sa valeur est nulle)
+            for (Arbre fils : parent.getFils()) //Pour tester qu'il ne s'sagit pas d'une feuille (et donc ne pas ajouter son FG dans l'ABR car sa valeur est nulle)
                 if (fils!=null){
                     a.ajoutFG(new ABR(file.peek().getValeur()));
                     break;
                 }
-            }            
+                       
             parcoursFG(a.getFG(), file);
         }
         
@@ -114,5 +121,72 @@ public class Dictionnaire{
             file.poll();
             parcoursFD(a.getFD(), file);
         }
+    }
+    public boolean motExiste(String nomDictionnaire, String mot){
+        String path = "assets/"+nomDictionnaire+".txt";
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(mot)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            // Handle file reading exceptions
+            e.printStackTrace();
+        }
+
+        return false; 
+    }
+    public void ajoutMot(String nomDictionnaire, String mot){
+        String path = "assets/"+nomDictionnaire+".txt";
+        if (!motExiste(nomDictionnaire, mot)){
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(path, true))) {
+                writer.newLine(); // Add a new line before appending the new word
+                writer.write(mot);
+                System.out.println("Le mot a été ajouté au dictionnaire.");
+            } catch (IOException e) {
+                // Handle file writing exceptions
+                e.printStackTrace();
+            }           
+        }
+        else
+            System.out.println("Ce mot existe dans le dictionnaire!");
+    }
+    public void suppressionMot(String nomDictionnaire, String mot){
+        if (motExiste(nomDictionnaire, mot)){
+            List<String> lines = new ArrayList<>();
+
+            // Read the content of the file and exclude the specified word
+            String path = "assets/"+nomDictionnaire+".txt";
+            try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (!line.contains(mot)) {
+                        lines.add(line);
+                    }
+                }
+            } catch (IOException e) {
+                // Handle file reading exceptions
+                e.printStackTrace();
+            }
+    
+            // Write the updated content back to the file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+                for (int i = 0; i < lines.size(); i++) {
+                    writer.write(lines.get(i));
+                    if (i < lines.size() - 1) {
+                        // Add a new line if the current line is not the last line
+                        writer.newLine();
+                    }
+                }
+                System.out.println("Le mot a été supprimé du dictionnaire.");
+            } catch (IOException e) {
+                // Handle file writing exceptions
+                e.printStackTrace();
+            }
+        }
+        else
+            System.out.println("Ce mot n'existe pas dans le dictionnaire!");
     }
 }
