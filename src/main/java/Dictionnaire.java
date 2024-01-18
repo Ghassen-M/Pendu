@@ -55,23 +55,23 @@ public class Dictionnaire{
         return false;
     }
 
-    public void printTree(Arbre a, String prefix, boolean isTail) {
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + a.getValeur());
+    public void afficherArbre(Arbre a, String prefixe, boolean feuille) {
+        System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur());
 
         for (int i = 0; i < a.getFils().size(); i++) {
-            printTree(a.getFils().get(i), prefix + (isTail ? "    " : "│   "), i == a.getFils().size() - 1);
+            afficherArbre(a.getFils().get(i), prefixe + (feuille ? "    " : "│   "), i == a.getFils().size() - 1);
         }
     }
-    public void printTreeBinaire(ABR a, String prefix, boolean isTail) {
+    public void afficherArbreBinaire(ABR a, String prefixe, boolean feuille) {
         String childIndicator = (a.getFG() != null) ? "FG" : ((a.getFD() != null) ? "FD" : "");
-        System.out.println(prefix + (isTail ? "└── " : "├── ") + a.getValeur() + " (" + childIndicator + ")");
+        System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur() + " (" + childIndicator + ")");
     
         if (a.getFG() != null) {
-            printTreeBinaire(a.getFG(), prefix + (isTail ? "    " : "│   "), a.getFD() == null);
+            afficherArbreBinaire(a.getFG(), prefixe + (feuille ? "    " : "│   "), a.getFD() == null);
         }
     
         if (a.getFD() != null) {
-            printTreeBinaire(a.getFD(), prefix + (isTail ? "    " : "│   "), a.getFD().getFD() == null);
+            afficherArbreBinaire(a.getFD(), prefixe + (feuille ? "    " : "│   "), a.getFD().getFD() == null);
         }
     }
 

@@ -35,7 +35,7 @@ public class Main {
             
             Dictionnaire d=new Dictionnaire();
             ABR a=d.arbreBinaire("dictionnaireExempleEnonce");
-            d.printTreeBinaire(a, "", false);
+            d.afficherArbreBinaire(a, "", false);
             
             break;
     }
