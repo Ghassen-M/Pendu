@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         while (true) {          
-            System.out.println("Avant de déclencher le programme, entrer le nom du dictionnaire (sans extension)");
+            System.out.println("Avant de déclencher le programme, entrer le nom du dictionnaire (sans extension):");
             Dictionnaire d=new Dictionnaire();
 
             Scanner scanner = new Scanner(System.in);
@@ -16,7 +16,7 @@ public class Main {
             }
 
             int choix=0;
-            System.out.println("Bienvenue dans le menu! Veuiller choisir une de ces options ci-dessous:");
+            System.out.println("\nBienvenue dans le menu! Veuiller choisir une de ces options ci-dessous:");
             System.out.println("======================================================================");
             while(true){
             System.out.println("1) Visualiser le dictionnaire (arbre N-aire)"); 
