@@ -11,15 +11,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Random;
 
 public class Dictionnaire{
+    private String nomDictionnaire;
+
+    public Dictionnaire(String nomDictionnaire){
+        this.nomDictionnaire = nomDictionnaire;
+    }
     
-    public boolean existenceFichier(String nomDictionnaire){
+    public void setNomDictionnaire(String nom){
+        nomDictionnaire=nom;
+    }
+    /* Checks whether a file with the given dictionary name exists in our assets folder */
+    public boolean existenceFichier(){
         Path filePath = FileSystems.getDefault().getPath("assets/"+nomDictionnaire+".txt");
         return Files.exists(filePath);
     }
 
-    public List<String> fileToList(String nomDictionnaire) {
+
+    /* Reads the contents of our dictionary into a list of strings */
+    public List<String> fileToList() {
         String path = "assets/"+nomDictionnaire+".txt";
         List<String> lines = new ArrayList<>();
 
@@ -32,8 +44,21 @@ public class Dictionnaire{
         return lines;
     }
 
-    public Arbre arbreNAire(String nomDictionnaire){
-        List<String> mots=fileToList(nomDictionnaire);
+    public String selectRandomWord(){
+        List<String> mots = fileToList();
+        if (mots == null || mots.isEmpty()) {
+            throw new IllegalArgumentException("Le dictionnaire est nul ou vide");
+        }
+        else{
+            Random random = new Random();
+            int randomIndex = random.nextInt(mots.size());
+    
+            return mots.get(randomIndex);
+        }
+    }
+    /* N-ary tree creation */
+    public Arbre arbreNAire(){
+        List<String> mots=fileToList();
 
         Arbre a = new Arbre('0');
 
@@ -43,6 +68,7 @@ public class Dictionnaire{
         return a;
     }
 
+    /* Adding a word to the tree */
     public void ajoutMot(Arbre a, String mot, int i){
         if (i==mot.length())
             a.ajoutFils(new Arbre('0'));
@@ -57,7 +83,7 @@ public class Dictionnaire{
                 }
         }
     }
-
+    /* Checking if a character exists in the tree */
     public boolean existe(char c, Arbre noeud){
         for (Arbre fils :noeud.getFils()){
             if (c==fils.getValeur())
@@ -65,32 +91,24 @@ public class Dictionnaire{
         }
         return false;
     }
-
-    public void afficherArbre(Arbre a, String prefixe, boolean feuille) {
-        System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur());
-
-        for (int i = 0; i < a.getFils().size(); i++)
-            afficherArbre(a.getFils().get(i), prefixe + (feuille ? "    " : "│   "), i == a.getFils().size() - 1);
-    }
-    public void afficherArbreBinaire(ABR a, String prefixe, boolean feuille) {
-        String childIndicator = (a.getFG() != null) ? "FG" : ((a.getFD() != null) ? "FD" : "");
-        System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur() + " (" + childIndicator + ")");
-    
-        if (a.getFG() != null)
-            afficherArbreBinaire(a.getFG(), prefixe + (feuille ? "    " : "│   "), a.getFD() == null);
-    
-        if (a.getFD() != null)
-            afficherArbreBinaire(a.getFD(), prefixe + (feuille ? "    " : "│   "), a.getFD().getFD() == null);
-    }
-
+    /* Converting N-ary tree to BST */
     public ABR arbreBinaire(Arbre arbreNaire){
+
+        // creating a new binary search tree with the root value of the given N-ary tree
         ABR a=new ABR(arbreNaire.getValeur());
+
+        // creating a queue to perform level-order traversal on the N-ary tree
         Queue<Arbre> file = new LinkedList<>();
+
+        // add the root of the N-ary tree to the queue
         file.offer(arbreNaire);
+        
+
         parcoursFG(a, file);
         a=a.getFG();
         return a;
     }
+
     public void parcoursFG(ABR a, Queue<Arbre> file){
         if (!file.isEmpty()){
             Arbre parent=file.poll();
@@ -100,9 +118,7 @@ public class Dictionnaire{
             for (Arbre fils : parent.getFils())
                 if (fils!=null)
                     file.offer(fils);
-                
             
-
             for (Arbre fils : parent.getFils()) //Pour tester qu'il ne s'sagit pas d'une feuille (et donc ne pas ajouter son FG dans l'ABR car sa valeur est nulle)
                 if (fils!=null){
                     a.ajoutFG(new ABR(file.peek().getValeur()));
@@ -115,19 +131,22 @@ public class Dictionnaire{
     }
     public void parcoursFD(ABR a, Queue<Arbre> file){
         if (!file.isEmpty()){
-            ABR noeudBinaire=new ABR(file.peek().getValeur());
+            char headValue = file.peek().getValeur();
+            ABR noeudBinaire=new ABR(headValue);
             a.ajoutFD(noeudBinaire);
             parcoursFG(a.getFD(), file);
             file.poll();
             parcoursFD(a.getFD(), file);
         }
     }
-    public boolean motExiste(String nomDictionnaire, String mot){
+
+    /* search the word from a dictionary that matches the string input */
+    public boolean motExiste(String mot){
         String path = "assets/"+nomDictionnaire+".txt";
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                if (line.contains(mot)) {
+                if (line.equals(mot)) {
                     return true;
                 }
             }
@@ -138,9 +157,24 @@ public class Dictionnaire{
 
         return false; 
     }
-    public void ajoutMot(String nomDictionnaire, String mot){
+    public boolean motExisteABR(String mot, ABR a){
+
+        if ((mot.charAt(0) != a.getValeur()) && (a.getFD() == null)) // cas: lettre non trouvée dans le reste du chemin de l'arbre
+            return false;
+        else if ((mot.charAt(0) == a.getValeur()) && (mot.length() == 1) && (a.getFG().getValeur()=='0')) // cas: dernière lettre trouvée et ABR accepte le mot (FG=0)
+            return true;
+        else if ((mot.charAt(0) == a.getValeur()) && (mot.length() == 1) && (a.getFG().getValeur()!='0')) // cas: dernière lettre trouvée mais ABR prévoit d'autre lettres (FG!=0)
+            return false;
+        else if (mot.charAt(0) == a.getValeur()) // cas: lettre trouvée dans l'arbre
+            return motExisteABR(mot.substring(1), a.getFG());
+        else   //cas:lettre non trouvée dans le noeud
+            return motExisteABR(mot, a.getFD());
+        
+    }
+
+    public void ajoutMot(String mot){
         String path = "assets/"+nomDictionnaire+".txt";
-        if (!motExiste(nomDictionnaire, mot)){
+        if (!motExiste(mot)){
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(path, true))) {
                 writer.newLine(); // Add a new line before appending the new word
                 writer.write(mot);
@@ -153,8 +187,9 @@ public class Dictionnaire{
         else
             System.out.println("Ce mot existe dans le dictionnaire!");
     }
-    public void suppressionMot(String nomDictionnaire, String mot){
-        if (motExiste(nomDictionnaire, mot)){
+    /* delete the word from a dictionary that matches the string input */
+    public void suppressionMot(String mot){
+        if (motExiste(mot)){
             List<String> lines = new ArrayList<>();
 
             // Read the content of the file and exclude the specified word
@@ -162,7 +197,7 @@ public class Dictionnaire{
             try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (!line.contains(mot)) {
+                    if (!line.equals(mot)) {
                         lines.add(line);
                     }
                 }
@@ -188,5 +223,24 @@ public class Dictionnaire{
         }
         else
             System.out.println("Ce mot n'existe pas dans le dictionnaire!");
+    }
+
+    public void afficherArbre(Arbre a, String prefixe, boolean feuille) {
+        System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur());
+
+        for (int i = 0; i < a.getFils().size(); i++)
+            afficherArbre(a.getFils().get(i), prefixe + (feuille ? "    " : "│   "), i == a.getFils().size() - 1);
+    }
+
+    /* fama machekel mtaa FG,FD fel affichage */
+    public void afficherArbreBinaire(ABR a, String prefixe, boolean feuille) {
+        String childIndicator = (a.getFG() != null) ? "FG" : ((a.getFD() != null) ? "FD" : "");
+        System.out.println(prefixe + (feuille ? "└── " : "├── ") + a.getValeur() + " (" + childIndicator + ")");
+    
+        if (a.getFG() != null)
+            afficherArbreBinaire(a.getFG(), prefixe + (feuille ? "    " : "│   "), a.getFD() == null);
+    
+        if (a.getFD() != null)
+            afficherArbreBinaire(a.getFD(), prefixe + (feuille ? "    " : "│   "), a.getFD().getFD() == null);
     }
 }

@@ -1,20 +1,39 @@
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-public class Main {
+public class Main extends Application {
+    private static Dictionnaire dict;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception{
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
+        Game gameController = new Game();
+        loader.setController(gameController);
+        gameController.setNomDictionnaire(dict);
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    
     public static void main(String[] args) {
-        while (true) {          
+        while (true) {         
+
             System.out.println("Avant de déclencher le programme, entrer le nom du dictionnaire (sans extension):");
-            Dictionnaire d=new Dictionnaire();
 
             Scanner scanner = new Scanner(System.in);
             String nomDictionnaire=scanner.nextLine();
-            while(!d.existenceFichier(nomDictionnaire)){
+            dict=new Dictionnaire(nomDictionnaire);
+            while(!dict.existenceFichier()){
                 System.out.println("Ce fichier n'existe pas! Ecrire un nom du fichier valide!");
                 nomDictionnaire=scanner.nextLine();
+                dict.setNomDictionnaire(nomDictionnaire);
             }
-
             int choix=0;
             System.out.println("\nBienvenue dans le menu! Veuiller choisir une de ces options ci-dessous:");
             System.out.println("======================================================================");
@@ -30,41 +49,41 @@ public class Main {
                 try {
                     choix=scanner.nextInt();                    
                 
-                    if ((choix!=0) && (choix!=1) && (choix!=2) &&(choix!=3) && (choix!=4) && (choix!=5) &&(choix!=6))
+                    if ((choix!=0) && (choix!=1) && (choix!=2) &&(choix!=3) && (choix!=4) && (choix!=5) &&(choix!=6) &&(choix!=7))
                         System.out.println("Saisir le nombre correspondant s'il vous plaît!");
                 }catch (InputMismatchException e) {System.out.println("Il faut saisir un nombre!");scanner.next();} 
-            }while((choix!=0) && (choix!=1) && (choix!=2) &&(choix!=3) && (choix!=4) && (choix!=5) &&(choix!=6)); 
+            }while((choix!=0) && (choix!=1) && (choix!=2) &&(choix!=3) && (choix!=4) && (choix!=5) &&(choix!=7)); 
 
-            Arbre aN=d.arbreNAire(nomDictionnaire);
-            ABR a=d.arbreBinaire(aN);
+            Arbre aN=dict.arbreNAire();
+            ABR a=dict.arbreBinaire(aN);
             String mot="";
 
             if (choix==0)
                 break;
                 switch (choix) {
                 case 1: 
-                    d.afficherArbre(aN, "", false);  
+                    dict.afficherArbre(aN, "", false);  
                     break;
                 case 2: 
-                    d.afficherArbreBinaire(a, "", false);
+                    dict.afficherArbreBinaire(a, "", false);
                     break;
                 case 3:   
                     System.out.println("Donner le mot à ajouter:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    d.ajoutMot(nomDictionnaire, mot);
+                    dict.ajoutMot(mot);
                     break;
                 case 4:   
                     System.out.println("Donner le mot à supprimer:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    d.suppressionMot(nomDictionnaire, mot);
+                    dict.suppressionMot(mot);
                     break;
                 case 5:   
                     System.out.println("Donner le mot à trouver:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    if (d.motExiste(nomDictionnaire, mot))
+                    if (dict.motExiste(mot))
                         System.out.println("Ce mot existe!");
                     else 
                         System.out.println("Ce mot n'existe pas!");
@@ -91,10 +110,13 @@ public class Main {
                     }catch (InputMismatchException e) {System.out.println("Il faut saisir un nombre!");scanner.next();} 
                     }while((choix!=1) && (choix!=2) &&(choix!=3)); 
                     break;
+                case 7:
+                    launch(args);
                 default:
                     break;
             }        
             }
+            scanner.close();
     }
 }
 }
