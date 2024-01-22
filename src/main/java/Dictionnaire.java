@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
@@ -91,6 +90,7 @@ public class Dictionnaire{
         a=a.getFG();
         return a;
     }
+
     public void parcoursFG(ABR a, Queue<Arbre> file){
         if (!file.isEmpty()){
             Arbre parent=file.poll();
@@ -101,8 +101,6 @@ public class Dictionnaire{
                 if (fils!=null)
                     file.offer(fils);
                 
-            
-
             for (Arbre fils : parent.getFils()) //Pour tester qu'il ne s'sagit pas d'une feuille (et donc ne pas ajouter son FG dans l'ABR car sa valeur est nulle)
                 if (fils!=null){
                     a.ajoutFG(new ABR(file.peek().getValeur()));
@@ -122,25 +120,69 @@ public class Dictionnaire{
             parcoursFD(a.getFD(), file);
         }
     }
-    public boolean motExiste(String nomDictionnaire, String mot){
-        String path = "assets/"+nomDictionnaire+".txt";
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains(mot)) {
-                    return true;
+
+    public boolean motExiste(String mot, ABR a){
+
+        if ((mot.charAt(0) != a.getValeur()) && (a.getFD() == null)) // cas: lettre non trouvée dans le reste du chemin de l'arbre
+            return false;
+        else if ((mot.charAt(0) == a.getValeur()) && (mot.length() == 1) && (a.getFG().getValeur()=='0')) // cas: dernière lettre trouvée et ABR accepte le mot (FG=0)
+            return true;
+        else if ((mot.charAt(0) == a.getValeur()) && (mot.length() == 1) && (a.getFG().getValeur()!='0')) // cas: dernière lettre trouvée mais ABR prévoit d'autre lettres (FG!=0)
+            return false;
+        else if (mot.charAt(0) == a.getValeur()) // cas: lettre trouvée dans l'arbre
+            return motExiste(mot.substring(1), a.getFG());
+        else   //cas:lettre non trouvée dans le noeud
+            return motExiste(mot, a.getFD());
+        
+    }
+
+    public void ajoutMOTABR(String mot, ABR a, boolean initialise){
+        if (mot.length()==0)
+        {
+            ABR n=a;
+            ABR noeudIntermediaire=new ABR('0');
+            if (a.getFG()!=null)
+                noeudIntermediaire.ajoutFD(n.getFG());
+            a.ajoutFG(noeudIntermediaire);                 
+        }
+        else if ((mot.charAt(0)!=a.getValeur()) && (a.getFD()!=null))
+        {   
+            ajoutMOTABR(mot, a.getFD(),initialise);
+        }
+        else if ((mot.charAt(0)!=a.getValeur()) && (a.getFD()==null))
+            {
+                ABR n=new ABR(mot.charAt(0));
+                if (initialise==false)
+                {
+                    a.ajoutFD(n);
+                    ajoutMOTABR(mot.substring(1), a.getFD(), true);
+                }
+                else 
+                {
+                    a.ajoutFG(n);
+                    ajoutMOTABR(mot.substring(1), a.getFG(), true);
                 }
             }
-        } catch (IOException e) {
-            // Handle file reading exceptions
-            e.printStackTrace();
-        }
+        else if ((mot.charAt(0)==a.getValeur()) && ((a.getFG().getValeur()!='0')|| (a.getFG()!=null)))
+            {
+                ajoutMOTABR(mot.substring(1), a.getFG(),initialise);
+            }
 
-        return false; 
+        else if ((mot.charAt(0)==a.getValeur()) && ((a.getFG().getValeur()=='0')|| (a.getFG()==null)))
+            {
+                if (mot.length()>1)
+                {
+                    ABR n=new ABR(mot.charAt(1));
+                    a.ajoutFD(n);
+                    ajoutMOTABR(mot.substring(1), a.getFG(),initialise);
+                }
+                else 
+                    ajoutMOTABR(mot.substring(1), a,initialise);
+            }
     }
-    public void ajoutMot(String nomDictionnaire, String mot){
+
+    public void ajoutMotFichier(String nomDictionnaire, String mot){
         String path = "assets/"+nomDictionnaire+".txt";
-        if (!motExiste(nomDictionnaire, mot)){
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(path, true))) {
                 writer.newLine(); // Add a new line before appending the new word
                 writer.write(mot);
@@ -149,12 +191,8 @@ public class Dictionnaire{
                 // Handle file writing exceptions
                 e.printStackTrace();
             }           
-        }
-        else
-            System.out.println("Ce mot existe dans le dictionnaire!");
     }
-    public void suppressionMot(String nomDictionnaire, String mot){
-        if (motExiste(nomDictionnaire, mot)){
+    public void suppressionMotFichier(String nomDictionnaire, String mot){
             List<String> lines = new ArrayList<>();
 
             // Read the content of the file and exclude the specified word
@@ -185,8 +223,5 @@ public class Dictionnaire{
                 // Handle file writing exceptions
                 e.printStackTrace();
             }
-        }
-        else
-            System.out.println("Ce mot n'existe pas dans le dictionnaire!");
     }
 }

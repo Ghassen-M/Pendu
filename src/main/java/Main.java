@@ -16,6 +16,9 @@ public class Main {
             }
 
             int choix=0;
+            Arbre aN=d.arbreNAire(nomDictionnaire);
+            ABR a=d.arbreBinaire(aN);
+            String mot="";
             System.out.println("\nBienvenue dans le menu! Veuiller choisir une de ces options ci-dessous:");
             System.out.println("======================================================================");
             while(true){
@@ -35,9 +38,6 @@ public class Main {
                 }catch (InputMismatchException e) {System.out.println("Il faut saisir un nombre!");scanner.next();} 
             }while((choix!=0) && (choix!=1) && (choix!=2) &&(choix!=3) && (choix!=4) && (choix!=5) &&(choix!=6)); 
 
-            Arbre aN=d.arbreNAire(nomDictionnaire);
-            ABR a=d.arbreBinaire(aN);
-            String mot="";
 
             if (choix==0)
                 break;
@@ -52,19 +52,19 @@ public class Main {
                     System.out.println("Donner le mot à ajouter:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    d.ajoutMot(nomDictionnaire, mot);
+                    d.ajoutMOTABR(mot, a, false);
                     break;
                 case 4:   
                     System.out.println("Donner le mot à supprimer:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    d.suppressionMot(nomDictionnaire, mot);
+                    d.suppressionMotFichier(nomDictionnaire, mot);
                     break;
                 case 5:   
                     System.out.println("Donner le mot à trouver:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    if (d.motExiste(nomDictionnaire, mot))
+                    if (d.motExiste(mot, a))
                         System.out.println("Ce mot existe!");
                     else 
                         System.out.println("Ce mot n'existe pas!");
