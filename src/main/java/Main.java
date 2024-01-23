@@ -71,19 +71,19 @@ public class Main extends Application {
                     System.out.println("Donner le mot à ajouter:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    dict.ajoutMot(mot);
+                    dict.ajoutMOTABR(mot,a,false);
                     break;
                 case 4:   
                     System.out.println("Donner le mot à supprimer:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    dict.suppressionMot(mot);
+                    dict.suppressionMotFichier(mot);
                     break;
                 case 5:   
                     System.out.println("Donner le mot à trouver:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    if (dict.motExiste(mot))
+                    if (dict.motExiste(mot,a))
                         System.out.println("Ce mot existe!");
                     else 
                         System.out.println("Ce mot n'existe pas!");

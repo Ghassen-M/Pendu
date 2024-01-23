@@ -141,23 +141,7 @@ public class Dictionnaire{
     }
 
     /* search the word from a dictionary that matches the string input */
-    public boolean motExiste(String mot){
-        String path = "assets/"+nomDictionnaire+".txt";
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.equals(mot)) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            // Handle file reading exceptions
-            e.printStackTrace();
-        }
-
-        return false; 
-    }
-    public boolean motExisteABR(String mot, ABR a){
+    public boolean motExiste(String mot, ABR a){
 
         if ((mot.charAt(0) != a.getValeur()) && (a.getFD() == null)) // cas: lettre non trouvée dans le reste du chemin de l'arbre
             return false;
@@ -166,15 +150,59 @@ public class Dictionnaire{
         else if ((mot.charAt(0) == a.getValeur()) && (mot.length() == 1) && (a.getFG().getValeur()!='0')) // cas: dernière lettre trouvée mais ABR prévoit d'autre lettres (FG!=0)
             return false;
         else if (mot.charAt(0) == a.getValeur()) // cas: lettre trouvée dans l'arbre
-            return motExisteABR(mot.substring(1), a.getFG());
+            return motExiste(mot.substring(1), a.getFG());
         else   //cas:lettre non trouvée dans le noeud
-            return motExisteABR(mot, a.getFD());
+            return motExiste(mot, a.getFD());
         
     }
 
-    public void ajoutMot(String mot){
+
+    public void ajoutMOTABR(String mot, ABR a, boolean initialise){
+        if (mot.length()==0)
+        {
+            ABR n=a;
+            ABR noeudIntermediaire=new ABR('0');
+            if (a.getFG()!=null)
+                noeudIntermediaire.ajoutFD(n.getFG());
+            a.ajoutFG(noeudIntermediaire);                 
+        }
+        else if ((mot.charAt(0)!=a.getValeur()) && (a.getFD()!=null))
+        {   
+            ajoutMOTABR(mot, a.getFD(),initialise);
+        }
+        else if ((mot.charAt(0)!=a.getValeur()) && (a.getFD()==null))
+            {
+                ABR n=new ABR(mot.charAt(0));
+                if (initialise==false)
+                {
+                    a.ajoutFD(n);
+                    ajoutMOTABR(mot.substring(1), a.getFD(), true);
+                }
+                else 
+                {
+                    a.ajoutFG(n);
+                    ajoutMOTABR(mot.substring(1), a.getFG(), true);
+                }
+            }
+        else if ((mot.charAt(0)==a.getValeur()) && ((a.getFG().getValeur()!='0')|| (a.getFG()!=null)))
+            {
+                ajoutMOTABR(mot.substring(1), a.getFG(),initialise);
+            }
+
+        else if ((mot.charAt(0)==a.getValeur()) && ((a.getFG().getValeur()=='0')|| (a.getFG()==null)))
+            {
+                if (mot.length()>1)
+                {
+                    ABR n=new ABR(mot.charAt(1));
+                    a.ajoutFD(n);
+                    ajoutMOTABR(mot.substring(1), a.getFG(),initialise);
+                }
+                else 
+                    ajoutMOTABR(mot.substring(1), a,initialise);
+            }
+    }
+    public void ajoutMotFichier(String mot){
         String path = "assets/"+nomDictionnaire+".txt";
-        if (!motExiste(mot)){
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(path, true))) {
                 writer.newLine(); // Add a new line before appending the new word
                 writer.write(mot);
@@ -183,46 +211,39 @@ public class Dictionnaire{
                 // Handle file writing exceptions
                 e.printStackTrace();
             }           
-        }
-        else
-            System.out.println("Ce mot existe dans le dictionnaire!");
     }
     /* delete the word from a dictionary that matches the string input */
-    public void suppressionMot(String mot){
-        if (motExiste(mot)){
-            List<String> lines = new ArrayList<>();
+    public void suppressionMotFichier(String mot){
+        List<String> lines = new ArrayList<>();
 
-            // Read the content of the file and exclude the specified word
-            String path = "assets/"+nomDictionnaire+".txt";
-            try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (!line.equals(mot)) {
-                        lines.add(line);
-                    }
+        // Read the content of the file and exclude the specified word
+        String path = "assets/"+nomDictionnaire+".txt";
+        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (!line.contains(mot)) {
+                    lines.add(line);
                 }
-            } catch (IOException e) {
-                // Handle file reading exceptions
-                e.printStackTrace();
             }
-    
-            // Write the updated content back to the file
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
-                for (int i = 0; i < lines.size(); i++) {
-                    writer.write(lines.get(i));
-                    if (i < lines.size() - 1) {
-                        // Add a new line if the current line is not the last line
-                        writer.newLine();
-                    }
-                }
-                System.out.println("Le mot a été supprimé du dictionnaire.");
-            } catch (IOException e) {
-                // Handle file writing exceptions
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            // Handle file reading exceptions
+            e.printStackTrace();
         }
-        else
-            System.out.println("Ce mot n'existe pas dans le dictionnaire!");
+
+        // Write the updated content back to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+            for (int i = 0; i < lines.size(); i++) {
+                writer.write(lines.get(i));
+                if (i < lines.size() - 1) {
+                    // Add a new line if the current line is not the last line
+                    writer.newLine();
+                }
+            }
+            System.out.println("Le mot a été supprimé du dictionnaire.");
+        } catch (IOException e) {
+            // Handle file writing exceptions
+            e.printStackTrace();
+        }
     }
 
     public void afficherArbre(Arbre a, String prefixe, boolean feuille) {
