@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Dictionnaire{
     private String nomDictionnaire;
@@ -43,8 +44,8 @@ public class Dictionnaire{
         } catch (IOException e) {e.printStackTrace();}
         return lines;
     }
-
-    public String selectRandomWord(){
+    // ne9sa hkeyet difficulty
+    public String selectRandomWord(int difficulty){
         List<String> mots = fileToList();
         if (mots == null || mots.isEmpty()) {
             throw new IllegalArgumentException("Le dictionnaire est nul ou vide");

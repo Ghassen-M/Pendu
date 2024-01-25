@@ -1,5 +1,6 @@
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -36,19 +37,28 @@ public class Game{
     private Text winStatus;
     @FXML
     private Text realWord;
-
+    @FXML
+    private Button replayButton;
 
     private int mistakes;
     private int correct;
-    private String myWord;
+    private String myWord="";
     private List<String> myLetters;
     private List<String> answer;
     private Dictionnaire dict;
+    private int difficulty;
     public Game() throws FileNotFoundException{
     }
 
     public void setNomDictionnaire(Dictionnaire d){
         this.dict = d;
+    }
+    public void setDifficulty(int d){
+        this.difficulty = d;
+    }
+
+    public void setWord(String w){
+        this.myWord = w;
     }
     public void initialize() {
         base1.setVisible(false);
@@ -59,9 +69,17 @@ public class Game{
         rope1.setVisible(false);
         rope2.setVisible(false);
         man.setVisible(false);
+        replayButton.setDisable(true);
+        replayButton.setVisible(false);
         mistakes=0;
         correct=0;
-        myWord = dict.selectRandomWord().toUpperCase();
+        if (myWord.equals("")){
+
+            replayButton.setDisable(false);
+            replayButton.setVisible(true);
+            myWord = dict.selectRandomWord(difficulty);
+        }
+        myWord = myWord.toUpperCase();
         myLetters = Arrays.asList(myWord.split(""));
         answer = Arrays.asList(new String[myLetters.size() * 2]);
         for (int i = 0; i < myLetters.size() * 2; i++) {
@@ -105,7 +123,7 @@ public class Game{
             String res = String.join("", answer);
             text.setText(res);
             if (correct == lengthWithoutSpaces) {
-                winStatus.setText("You Win!");
+                winStatus.setText("Vous avez Gagnez!");
                 buttons.setDisable(true);
             }
         } else {
@@ -127,8 +145,8 @@ public class Game{
             else if (mistakes == 8) {
                 rope2.setVisible(false);
                 man.setVisible(true);
-                winStatus.setText("You Lose!");
-                realWord.setText("The actual word was " + myWord);
+                winStatus.setText("Vous avez Perdu!");
+                realWord.setText("Le mot à deviner était " + myWord);
                 buttons.setDisable(true);
             }
         }
