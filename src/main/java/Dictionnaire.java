@@ -7,9 +7,13 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Set;
 
 public class Dictionnaire{
     
@@ -208,7 +212,6 @@ public class Dictionnaire{
                 // Handle file reading exceptions
                 e.printStackTrace();
             }
-    
             // Write the updated content back to the file
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
                 for (int i = 0; i < lines.size(); i++) {
@@ -223,5 +226,41 @@ public class Dictionnaire{
                 // Handle file writing exceptions
                 e.printStackTrace();
             }
+        }
+    public Map<Character, Integer> occurrenceMot(String mot) {
+        Map<Character, Integer> frequencyMap = new HashMap<>();
+        String test="é";
+        char test2='é';
+        System.out.println(test);
+        System.out.println(test2);
+        System.out.println(mot);
+        System.out.println(mot.charAt(0));
+        for (int i = 0; i < mot.length(); i++) {
+            Character c = mot.charAt(i);
+            System.out.println("le caractère traité est: " + c);
+            frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
+        }
+        return frequencyMap;
     }
-}
+    
+        public float difficulty(String mot){
+            mot=mot.toLowerCase();
+            LetterFrequency lf=new LetterFrequency();
+            Map<Character, Float> mapLangue = lf.createLetterFrequencyMap();
+            Map<Character, Integer> mapMot = occurrenceMot(mot);
+            float avg=0;
+            for (Character c : mapMot.keySet()){
+
+                // Check if the key is present in both maps
+                if (mapLangue.containsKey(c) && mapMot.get(c) != null && mapLangue.get(c) != null) {
+                    avg += (1 / mapLangue.get(c).floatValue() * Math.sqrt(mapMot.get(c)));
+                } else {
+                    // Handle the case where the key is not present in one of the maps
+                    System.out.println("Key not found in one of the maps: " + c);
+                }
+            }
+            avg/=mapMot.size();
+            return mot.length()*avg;
+        }
+    }
+

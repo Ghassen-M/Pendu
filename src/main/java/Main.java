@@ -8,7 +8,7 @@ public class Main {
             System.out.println("Avant de déclencher le programme, entrer le nom du dictionnaire (sans extension):");
             Dictionnaire d=new Dictionnaire();
 
-            Scanner scanner = new Scanner(System.in);
+            Scanner scanner = new Scanner(System.in,"UTF-8");
             String nomDictionnaire=scanner.nextLine();
             while(!d.existenceFichier(nomDictionnaire)){
                 System.out.println("Ce fichier n'existe pas! Ecrire un nom du fichier valide!");
@@ -52,13 +52,15 @@ public class Main {
                     System.out.println("Donner le mot à ajouter:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    d.ajoutMOTABR(mot, a, false);
+                    if (!d.motExiste(mot, a))
+                        d.ajoutMOTABR(mot, a, false);
                     break;
                 case 4:   
                     System.out.println("Donner le mot à supprimer:");
                     scanner.nextLine();
                     mot=scanner.nextLine();
-                    d.suppressionMotFichier(nomDictionnaire, mot);
+                    if (d.motExiste(mot, a))
+                        d.suppressionMotFichier(nomDictionnaire, mot);
                     break;
                 case 5:   
                     System.out.println("Donner le mot à trouver:");
@@ -82,14 +84,21 @@ public class Main {
                 "| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |  \r\n" + //
                 " '----------------'  '----------------'  '----------------'  '----------------'  '----------------'   ");
                 System.out.println("Bienvenue dans le jeu du pendu! Veuillez choisir un niveau de difficulté parmi les suivants:\n1)Facile\n2)Moyen\n3)Difficile");  
+                int diff=0;
                 do{
                     try {
-                        choix=scanner.nextInt();                    
-                    
-                        if ((choix!=1) && (choix!=2) && (choix!=3))
+                        diff=scanner.nextInt();                    
+                        if ((diff!=1) && (diff!=2) && (diff!=3))
                             System.out.println("Saisir le nombre correspondant s'il vous plaît!");
                     }catch (InputMismatchException e) {System.out.println("Il faut saisir un nombre!");scanner.next();} 
-                    }while((choix!=1) && (choix!=2) &&(choix!=3)); 
+                    }while((diff!=1) && (diff!=2) &&(diff!=3));
+                    while(true){
+                        System.out.println("Donner un mot");
+                        String w=scanner.next();
+                        if (w=="0000")
+                            break;
+                        System.out.println("La difficulté est: "+d.difficulty(w));
+                    } 
                     break;
                 default:
                     break;
