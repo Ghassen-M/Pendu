@@ -96,7 +96,6 @@ public class Game{
             }
         }
 
-
         String res = String.join("", answer);
         text.setText(res);
         winStatus.setText("");
@@ -152,6 +151,7 @@ public class Game{
         }
     }
     public void newGame() {
+        myWord="";
         for (int i = 0; i < 26; i++) {
             buttons.getChildren().get(i).setDisable(false);
         }
