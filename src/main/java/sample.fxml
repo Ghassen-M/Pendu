@@ -182,11 +182,11 @@
             <Font size="60.0" />
          </font>
       </Text>
-      <Text fx:id="realWord" fill="#40b9ff" layoutX="378.0" layoutY="450.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="359.0">
+      <Text fx:id="realWord" fill="#40b9ff" layoutX="420" layoutY="450.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="359.0">
          <font>
             <Font size="30.0" />
          </font>
       </Text>
-         <Button fx:id="replayButton" focusTraversable="false" layoutX="14.0" layoutY="15.0" mnemonicParsing="false" onAction="#newGame" style="-fx-background-color: #59D0F6#59D0F6;" text="New Game" />
+         <Button fx:id="replayButton" focusTraversable="false" layoutX="14.0" layoutY="15.0" mnemonicParsing="false" onAction="#newGame" style="-fx-background-color: #59D0F6#59D0F6;" text="Nouvelle partie" />
    </children>
 </Pane>

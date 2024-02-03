@@ -158,7 +158,7 @@ public class Main extends Application {
 
                         if (mode == 1) {
                             System.out.println(
-                                "Veuillez choisir un niveau de difficultés parmi les suivants:\n1)facile\n2)moyenne\n3)difficile");
+                                "Veuillez choisir un niveau de difficulté parmi les suivants:\n1)facile\n2)moyenne\n3)difficile");
                             do {
 
                                 try {

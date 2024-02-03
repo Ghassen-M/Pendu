@@ -69,16 +69,16 @@ public class Game{
         rope1.setVisible(false);
         rope2.setVisible(false);
         man.setVisible(false);
-        replayButton.setDisable(true);
-        replayButton.setVisible(false);
+        //replayButton.setDisable(true);
+        //replayButton.setVisible(false);
         mistakes=0;
         correct=0;
-        if (myWord.equals("")){
+        //if (myWord.equals("")){
 
             replayButton.setDisable(false);
             replayButton.setVisible(true);
             myWord = dict.selectRandomWord(difficulty);
-        }
+        //}
         myWord = myWord.toUpperCase();
         myLetters = Arrays.asList(myWord.split(""));
         answer = Arrays.asList(new String[myLetters.size() * 2]);
@@ -123,7 +123,7 @@ public class Game{
             String res = String.join("", answer);
             text.setText(res);
             if (correct == lengthWithoutSpaces) {
-                winStatus.setText("Vous avez Gagnez!");
+                winStatus.setText("Vous avez Gagné!");
                 buttons.setDisable(true);
             }
         } else {
