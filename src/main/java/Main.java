@@ -160,7 +160,6 @@ public class Main extends Application {
                             System.out.println(
                                 "Veuillez choisir un niveau de difficulté parmi les suivants:\n1)facile\n2)moyenne\n3)difficile");
                             do {
-
                                 try {
                                     difficulty = scanner.nextInt();
 
@@ -172,7 +171,6 @@ public class Main extends Application {
                                 }
                             } while ((difficulty != 1) && (difficulty != 2) && (difficulty != 3));
                         }
-
 
                         launch(args);
                         break;

@@ -44,8 +44,39 @@ public class Dictionnaire{
         } catch (IOException e) {e.printStackTrace();}
         return lines;
     }
+    public Map<Character, Integer> occurrenceMot(String mot) {
+        Map<Character, Integer> frequencyMap = new HashMap<>();
+
+        for (int i = 0; i < mot.length(); i++) {
+            frequencyMap.put(mot.charAt(i), frequencyMap.getOrDefault(mot.charAt(i), 0) + 1);
+        }
+        return frequencyMap;
+    }
+    
+        public float difficulty(String mot){
+            mot=mot.toLowerCase();
+            LetterFrequency lf=new LetterFrequency();
+            Map<Character, Float> mapLangue = lf.createLetterFrequencyMap();
+            Map<Character, Integer> mapMot = occurrenceMot(mot);
+            float avg=0;
+            for (Character c : mapMot.keySet()){
+                // Check if the key is present in both maps
+                if (mapLangue.containsKey(c) && mapMot.get(c) != null && mapLangue.get(c) != null) {
+                    float frequenceNormalise= (float) ((mapLangue.get(c) - 0.15) / (12.1 - 0.15)+1);
+                    avg += (float) (1 / (frequenceNormalise * Math.pow(mapMot.get(c),2)));
+                    
+                } else {
+                    // Handle the case where the key is not present in one of the maps
+                    System.out.println("Key not found in one of the maps: " + c);
+                }
+            }
+            avg/=mapMot.size();
+            return mot.length()*avg;
+        }
+
     // ne9sa hkeyet difficulty
-    public String selectRandomWord(int difficulty){
+    public String selectRandomWord(int level){
+
         List<String> mots = fileToList();
         if (mots == null || mots.isEmpty()) {
             throw new IllegalArgumentException("Le dictionnaire est nul ou vide");
@@ -53,8 +84,22 @@ public class Dictionnaire{
         else{
             Random random = new Random();
             int randomIndex = random.nextInt(mots.size());
-    
-            return mots.get(randomIndex);
+            String w= mots.get(randomIndex);
+            switch (level) {
+                case 1:
+                    while (difficulty(w)>4.1)
+                        {w= mots.get(randomIndex);}
+                break;
+                case 2:
+                    while ((difficulty(w)<=4.1) || ((difficulty(w)>7)))
+                        {w= mots.get(randomIndex);} 
+                break;
+                case 3:
+                    while (difficulty(w)<=7)
+                        {w= mots.get(randomIndex);} 
+                break;
+            }
+            return w;
         }
     }
     /* N-ary tree creation */
