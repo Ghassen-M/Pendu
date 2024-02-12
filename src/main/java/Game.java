@@ -1,14 +1,15 @@
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.MediaPlayer;
 
+import java.io.File;
 
 
 public class Game{
@@ -47,6 +48,8 @@ public class Game{
     private List<String> answer;
     private Dictionnaire dict;
     private int difficulty;
+    private  AudioClip audioClip;
+    private AudioClip audioClipE;
     public Game() throws FileNotFoundException{
     }
 
@@ -94,6 +97,10 @@ public class Game{
                     answer.set(i, " ");
                 }
             }
+            String soundFile = "assets/sfx/succes.mp3"; 
+            audioClip = new AudioClip(new File(soundFile).toURI().toString());
+            String soundFileE = "assets/sfx/echec.mp3"; 
+            audioClipE = new AudioClip(new File(soundFileE).toURI().toString());
         }
 
         String res = String.join("", answer);
@@ -101,6 +108,7 @@ public class Game{
         winStatus.setText("");
         realWord.setText("");
         buttons.setDisable(false);
+
     }
 
 
@@ -122,6 +130,7 @@ public class Game{
             String res = String.join("", answer);
             text.setText(res);
             if (correct == lengthWithoutSpaces) {
+                audioClip.play(); 
                 winStatus.setText("Vous avez Gagné!");
                 buttons.setDisable(true);
             }
@@ -144,6 +153,8 @@ public class Game{
             else if (mistakes == 8) {
                 rope2.setVisible(false);
                 man.setVisible(true);
+
+                audioClipE.play();   
                 winStatus.setText("Vous avez Perdu!");
                 realWord.setText("Le mot à deviner était " + myWord);
                 buttons.setDisable(true);

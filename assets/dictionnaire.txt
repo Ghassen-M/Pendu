@@ -5,7 +5,7 @@ transpirer
 defendre
 vote
 caravane
-bâton
+baton
 spirale
 exemple
 tourisme
