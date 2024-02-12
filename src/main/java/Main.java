@@ -1,6 +1,7 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,11 +23,22 @@ public class Main extends Application {
 
         Parent root = loader.load();
         Scene scene = new Scene(root);
+
+        // Set onCloseRequest handler for the primary stage
+        primaryStage.setOnCloseRequest(event -> {
+            // Handle the close event
+            // You can perform any necessary cleanup or save operations here
+            // Then exit the application
+            System.exit(0);
+        });
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        
     }
 
     public static void main(String[] args) {
+
         //Exécution du programme dans la console
         while (true) {
             //Insertion du dictionnaire
@@ -41,10 +53,10 @@ public class Main extends Application {
                 dict.setNomDictionnaire(nomDictionnaire);
             }
             //Affichage du menu
-            int choix = 0;
+            int choix = -1;
             System.out.println("\nBienvenue dans le menu! Veuiller choisir une de ces options ci-dessous:");
-            System.out.println("======================================================================");
             while (true) {
+                System.out.println("======================================================================");
                 System.out.println("1) Visualiser le dictionnaire (arbre N-aire)");
                 System.out.println("2) Visualiser le dictionnaire (arbre binaire)");
                 System.out.println("3) Ajouter un mot");
@@ -58,25 +70,25 @@ public class Main extends Application {
                         choix = scanner.nextInt();
 
                         if ((choix != 0) && (choix != 1) && (choix != 2) && (choix != 3) && (choix != 4) && (choix != 5)
-                                && (choix != 6) && (choix != 7))
+                                && (choix != 6))
                             System.out.println("Saisir le nombre correspondant s'il vous plaît!");
                         
                     } //Si la valeur inséré du choix n'est pas numérique, on conserve la boucle sans sortir du programme
                     catch (InputMismatchException e) { 
                         System.out.println("Il faut saisir un nombre!");
                         scanner.next();
+                        choix = scanner.nextInt();
                     }
-                } while ((choix != 0) && (choix != 1) && (choix != 2) && (choix != 3) && (choix != 4) && (choix != 5)
-                        && (choix != 6) && (choix != 7));
+                } while ((choix != 0) && (choix != 1) && (choix != 2) && (choix != 3) && (choix != 4) && (choix != 5) && (choix != 6));
+                 //Quitter le menu si choix=0
+                if (choix == 0)
+                    break;
                 //Création d'arbre N-aire à partir du fichier dictionnaire
                 Arbre aN = dict.arbreNAire();
                 //Création d'arbre binaire à partir d'arbre N-aire
                 ABR a = dict.arbreBinaire(aN);
                 //La variable mot est utile pour quelques manipulations dans le menu
                 String mot = "";
-                //Quitter le menu si choix=0
-                if (choix == 0)
-                    break;
                 switch (choix) {
                     case 1:
                         dict.afficherArbre(aN, "", false);
@@ -88,24 +100,43 @@ public class Main extends Application {
                         System.out.println("Donner le mot à ajouter:");
                         scanner.nextLine();
                         mot = scanner.nextLine();
-                        dict.ajoutMotFichier(mot);
+                        if (!dict.motExiste(mot, a))
+                            dict.ajoutMotFichier(mot);
+                        else 
+                            System.out.println("Ce mot existe dans le fichier!");     
                         break;
                     case 4:
-                        System.out.println("Donner le mot à supprimer:");
-                        scanner.nextLine();
-                        mot = scanner.nextLine();
-                        dict.suppressionMotFichier(mot);
+                        if (a==null)
+                            System.out.println("Rien à supprimer car votre dictionnaire est vide!");
+                        else
+                        {
+                            System.out.println("Donner le mot à supprimer:");
+                            scanner.nextLine();
+                            mot = scanner.nextLine();
+                            if (dict.motExiste(mot, a))
+                                dict.suppressionMotFichier(mot);
+                            else    
+                                System.out.println("Ce mot n'existe pas!");
+                        }
                         break;
                     case 5:
-                        System.out.println("Donner le mot à trouver:");
-                        scanner.nextLine();
-                        mot = scanner.nextLine();
-                        if (dict.motExiste(mot, a))
-                            System.out.println("Ce mot existe!");
+                        if (a==null)
+                            System.out.println("Rien à afficher car votre dictionnaire est vide!");
                         else
-                            System.out.println("Ce mot n'existe pas!");
+                        {
+                            System.out.println("Donner le mot à trouver:");
+                            scanner.nextLine();
+                            mot = scanner.nextLine();
+                            if (dict.motExiste(mot, a))
+                                System.out.println("Ce mot existe!");
+                            else
+                                System.out.println("Ce mot n'existe pas!");
+                        }
                         break;
                     case 6:
+                        if (a==null) 
+                            System.out.println("Votre dictionnaire est vide! On ne peut pas démarrer la partie!");
+                        else{
                         System.out.println(
                                 " .----------------.  .----------------.  .-----------------. .----------------.  .----------------.   \r\n"
                                         + //
@@ -183,11 +214,11 @@ public class Main extends Application {
                         //Démarrage de l'interface graphique
                         launch(args);
                         break;
+                        }
                     default:
                         break;
                 }
             }
-            scanner.close();
         }
     }
 

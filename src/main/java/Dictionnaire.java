@@ -45,9 +45,9 @@ public class Dictionnaire{
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line;
             //Tant qu'on a une ligne non vide dans le fichier, c'est un mot! On l'ajoute dans notre variable
-            while ((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) 
                 lines.add(line);
-            }
+            
         } catch (IOException e) {e.printStackTrace();}
 
         return lines;
@@ -58,10 +58,10 @@ public class Dictionnaire{
         List<String> mots=fileToList();
         //Création de la racine
         Arbre a = new Arbre('0');
-        //Ajout des mots de la liste crée
-        for (String mot : mots){
-            ajoutMot(a,mot,0);
-        }
+        //Ajout des mots de la liste crée dans l'arbre
+            for (String mot : mots)
+                ajoutMot(a,mot,0);
+            
         return a;
     }
 
@@ -171,51 +171,6 @@ public class Dictionnaire{
         
     }
 
-
-    public void ajoutMOTABR(String mot, ABR a, boolean initialise){
-        if (mot.length()==0)
-        {
-            ABR n=a;
-            ABR noeudIntermediaire=new ABR('0');
-            if (a.getFG()!=null)
-                noeudIntermediaire.ajoutFD(n.getFG());
-            a.ajoutFG(noeudIntermediaire);                 
-        }
-        else if ((mot.charAt(0)!=a.getValeur()) && (a.getFD()!=null))
-        {   
-            ajoutMOTABR(mot, a.getFD(),initialise);
-        }
-        else if ((mot.charAt(0)!=a.getValeur()) && (a.getFD()==null))
-            {
-                ABR n=new ABR(mot.charAt(0));
-                if (initialise==false)
-                {
-                    a.ajoutFD(n);
-                    ajoutMOTABR(mot.substring(1), a.getFD(), true);
-                }
-                else 
-                {
-                    a.ajoutFG(n);
-                    ajoutMOTABR(mot.substring(1), a.getFG(), true);
-                }
-            }
-        else if ((mot.charAt(0)==a.getValeur()) && ((a.getFG().getValeur()!='0')|| (a.getFG()!=null)))
-            {
-                ajoutMOTABR(mot.substring(1), a.getFG(),initialise);
-            }
-
-        else if ((mot.charAt(0)==a.getValeur()) && ((a.getFG().getValeur()=='0')|| (a.getFG()==null)))
-            {
-                if (mot.length()>1)
-                {
-                    ABR n=new ABR(mot.charAt(1));
-                    a.ajoutFD(n);
-                    ajoutMOTABR(mot.substring(1), a.getFG(),initialise);
-                }
-                else 
-                    ajoutMOTABR(mot.substring(1), a,initialise);
-            }
-    }
     //Fonction pour ajouter un mot donné dans le fichier dictionnaire
     public void ajoutMotFichier(String mot){
         //Chemin relatif du fichier
@@ -231,10 +186,12 @@ public class Dictionnaire{
             } catch (IOException e) {
                 
                 e.printStackTrace();
-            }           
+            }    
+  
     }
     //Fonction pour supprimer un mot donné du fichier dictionnaire
     public void suppressionMotFichier(String mot){
+
         List<String> lines = new ArrayList<>();
 
         //Chemin relatif du fichier
@@ -270,6 +227,7 @@ public class Dictionnaire{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
     //Fonction d'affichage d'arbre N-aire
     public void afficherArbre(Arbre a, String prefixe, boolean feuille) {
@@ -283,6 +241,10 @@ public class Dictionnaire{
 
     //Fonction d'affichage d'arbre binaire en utilisant un parcours préfixe
     public void afficherArbreBinaire(ABR a, String prefixe, boolean feuille) {
+        if (a==null)
+            System.out.println("Votre dictionnaire est vide! Rien à afficher");
+        else{
+
         //Variable qui indique la nature du noeud par rapport à son parent (fils gauche ou fils droit)
         String childIndicator = (a.getFG() != null) ? "FG" : ((a.getFD() != null) ? "FD" : "");
         //La variable prefixe est utile pour la tabulation
@@ -293,7 +255,8 @@ public class Dictionnaire{
     
         if (a.getFD() != null)
             afficherArbreBinaire(a.getFD(), prefixe + (feuille ? "    " : "│   "), a.getFD().getFD() == null);
-    }
+        }
+        }
 
     //Fonction qui retourne un dictionnaire Map contenant l'occurrence de chaque lettre dans un mot donné
     public Map<Character, Integer> occurrenceMot(String mot) {
@@ -349,15 +312,15 @@ public class Dictionnaire{
             switch (level) {
                 case 1:
                     while (difficulty(w)>4.1)
-                        {w= mots.get(randomIndex);}
+                        {randomIndex = random.nextInt(mots.size());w= mots.get(randomIndex);}
                 break;
                 case 2:
                     while ((difficulty(w)<=4.1) || ((difficulty(w)>7)))
-                        {w= mots.get(randomIndex);} 
+                        {randomIndex = random.nextInt(mots.size());w= mots.get(randomIndex);} 
                 break;
                 case 3:
                     while (difficulty(w)<=7)
-                        {w= mots.get(randomIndex);} 
+                        {randomIndex = random.nextInt(mots.size());w= mots.get(randomIndex);} 
                 break;
             }
             return w;
