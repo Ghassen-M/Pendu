@@ -10,7 +10,7 @@ public class Main extends Application {
     private static Dictionnaire dict;
     private static int difficulty=0;
     private static String word="";
-
+    //Chargement de l'interface graphique du jeu
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("sample.fxml"));
@@ -27,18 +27,20 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        //Exécution du programme dans la console
         while (true) {
-
+            //Insertion du dictionnaire
             System.out.println("Avant de déclencher le programme, entrer le nom du dictionnaire (sans extension):");
-
             Scanner scanner = new Scanner(System.in);
             String nomDictionnaire = scanner.nextLine();
             dict = new Dictionnaire(nomDictionnaire);
+            //Contrôle de saisie du nom du dictionnaire
             while (!dict.existenceFichier()) {
                 System.out.println("Ce fichier n'existe pas! Ecrire un nom du fichier valide!");
                 nomDictionnaire = scanner.nextLine();
                 dict.setNomDictionnaire(nomDictionnaire);
             }
+            //Affichage du menu
             int choix = 0;
             System.out.println("\nBienvenue dans le menu! Veuiller choisir une de ces options ci-dessous:");
             System.out.println("======================================================================");
@@ -50,6 +52,7 @@ public class Main extends Application {
                 System.out.println("5) Trouver un mot");
                 System.out.println("6) Jouer!");
                 System.out.println("0) Choisir un autre dictionnaire (quitter le menu)");
+                //Contrôle de saisie du choix
                 do {
                     try {
                         choix = scanner.nextInt();
@@ -57,17 +60,21 @@ public class Main extends Application {
                         if ((choix != 0) && (choix != 1) && (choix != 2) && (choix != 3) && (choix != 4) && (choix != 5)
                                 && (choix != 6) && (choix != 7))
                             System.out.println("Saisir le nombre correspondant s'il vous plaît!");
-                    } catch (InputMismatchException e) {
+                        
+                    } //Si la valeur inséré du choix n'est pas numérique, on conserve la boucle sans sortir du programme
+                    catch (InputMismatchException e) { 
                         System.out.println("Il faut saisir un nombre!");
                         scanner.next();
                     }
                 } while ((choix != 0) && (choix != 1) && (choix != 2) && (choix != 3) && (choix != 4) && (choix != 5)
                         && (choix != 6) && (choix != 7));
-
+                //Création d'arbre N-aire à partir du fichier dictionnaire
                 Arbre aN = dict.arbreNAire();
+                //Création d'arbre binaire à partir d'arbre N-aire
                 ABR a = dict.arbreBinaire(aN);
+                //La variable mot est utile pour quelques manipulations dans le menu
                 String mot = "";
-
+                //Quitter le menu si choix=0
                 if (choix == 0)
                     break;
                 switch (choix) {
@@ -81,7 +88,7 @@ public class Main extends Application {
                         System.out.println("Donner le mot à ajouter:");
                         scanner.nextLine();
                         mot = scanner.nextLine();
-                        dict.ajoutMOTABR(mot, a, false);
+                        dict.ajoutMotFichier(mot);
                         break;
                     case 4:
                         System.out.println("Donner le mot à supprimer:");
@@ -124,8 +131,8 @@ public class Main extends Application {
                         System.out.println(
                                 "Bienvenue dans le jeu du pendu! Veuillez choisir un mode de jeu parmi les suivants:\n1)Solo\n2)1vs1");
                         int mode=0;
+                        //Séléction d'un mode du jeu (Solo;1v1)
                         do {
-
                             try {
                                 mode = scanner.nextInt();
                                 scanner.nextLine();
@@ -136,6 +143,8 @@ public class Main extends Application {
                                 scanner.next();
                             }
                         } while ((mode != 1) && (mode != 2));
+                        //Dans le mode 1v1, un joueur insère un mot (qui doit exister dans le dictionnaire)
+                        //à deviner par l'autre joueur
                         if(mode == 2){
                             Boolean wordExists=false;
                             System.out.println("Veuillez saisir un mot parmi les mots dans le dictionnaire");
@@ -155,7 +164,7 @@ public class Main extends Application {
                             } while (!wordExists);
                             
                         }
-
+                        //Dans le mode Solo, le joueur choisit le niveau de difficulté souhaité
                         if (mode == 1) {
                             System.out.println(
                                 "Veuillez choisir un niveau de difficulté parmi les suivants:\n1)facile\n2)moyenne\n3)difficile");
@@ -171,7 +180,7 @@ public class Main extends Application {
                                 }
                             } while ((difficulty != 1) && (difficulty != 2) && (difficulty != 3));
                         }
-
+                        //Démarrage de l'interface graphique
                         launch(args);
                         break;
                     default:
