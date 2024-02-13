@@ -1,7 +1,6 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -195,22 +194,20 @@ public class Main extends Application {
                             } while (!wordExists);
                             
                         }
-                        //Dans le mode Solo, le joueur choisit le niveau de difficulté souhaité
-                        if (mode == 1) {
-                            System.out.println(
-                                "Veuillez choisir un niveau de difficulté parmi les suivants:\n1)facile\n2)moyenne\n3)difficile");
-                            do {
-                                try {
-                                    difficulty = scanner.nextInt();
+                        System.out.println(
+                            "Veuillez choisir un niveau de difficulté parmi les suivants:\n1)facile\n2)moyenne\n3)difficile");
+                        do {
+                            try {
+                                difficulty = scanner.nextInt();
 
-                                    if ((difficulty != 1) && (difficulty != 2) && (difficulty != 3))
-                                        System.out.println("Saisir le nombre correspondant s'il vous plaît!");
-                                } catch (InputMismatchException e) {
-                                    System.out.println("Il faut saisir un nombre!");
-                                    scanner.next();
-                                }
-                            } while ((difficulty != 1) && (difficulty != 2) && (difficulty != 3));
-                        }
+                                if ((difficulty != 1) && (difficulty != 2) && (difficulty != 3))
+                                    System.out.println("Saisir le nombre correspondant s'il vous plaît!");
+                            } catch (InputMismatchException e) {
+                                System.out.println("Il faut saisir un nombre!");
+                                scanner.next();
+                            }
+                        } while ((difficulty != 1) && (difficulty != 2) && (difficulty != 3));
+                        
                         //Démarrage de l'interface graphique
                         launch(args);
                         break;

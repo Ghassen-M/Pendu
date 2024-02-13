@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 import javafx.scene.media.AudioClip;
-import javafx.scene.media.MediaPlayer;
-
 import java.io.File;
 
 
@@ -136,7 +134,9 @@ public class Game{
             }
         } else {
             mistakes++;
-            if (mistakes == 1)
+            switch (difficulty) {
+                case 1:
+                if (mistakes == 1)
                 base1.setVisible(true);
             else if (mistakes == 2)
                 base2.setVisible(true);
@@ -158,14 +158,73 @@ public class Game{
                 winStatus.setText("Vous avez Perdu!");
                 realWord.setText("Le mot à deviner était " + myWord);
                 buttons.setDisable(true);
+            }                  
+                    break;
+                case 2:
+                if (mistakes == 1)
+                {
+                    base1.setVisible(true);
+                    base2.setVisible(true);
+                }
+                else if (mistakes == 2)
+                {
+                    base3.setVisible(true);
+                    pole.setVisible(true);
+                }
+                else if (mistakes == 3)
+                {
+                    rod.setVisible(true);
+
+                }
+
+                else if (mistakes == 4)
+                {
+                    rope1.setVisible(true);
+                    rope2.setVisible(true);
+                }
+                else if (mistakes == 5) {
+                rope2.setVisible(false);
+                man.setVisible(true);
+
+                audioClipE.play();   
+                winStatus.setText("Vous avez Perdu!");
+                realWord.setText("Le mot à deviner était " + myWord);
+                buttons.setDisable(true);
+            }                
+                break;
+                case 3:
+                if (mistakes == 1)
+                {
+                    base1.setVisible(true);
+                    base2.setVisible(true);
+                    base3.setVisible(true);
+                    pole.setVisible(true);
+                }
+                else if (mistakes == 2)
+                {
+                    rod.setVisible(true);
+                    rope1.setVisible(true);
+                    rope2.setVisible(true);
+                }
+                else if (mistakes == 3)
+                {
+                rope2.setVisible(false);
+                man.setVisible(true);
+                audioClipE.play();   
+                winStatus.setText("Vous avez Perdu!");
+                realWord.setText("Le mot à deviner était " + myWord);
+                buttons.setDisable(true);
+                }                
+                break;            
+                default:
+                    break;
             }
         }
     }
     public void newGame() {
         myWord="";
-        for (int i = 0; i < 26; i++) {
+        for (int i = 0; i < 26; i++)
             buttons.getChildren().get(i).setDisable(false);
-        }
         initialize();
     }
 
